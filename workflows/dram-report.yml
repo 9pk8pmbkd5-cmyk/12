@@ -1,0 +1,31 @@
+name: DRAM ETF Daily Report
+
+on:
+  schedule:
+    # 北京时间每天 17:00 执行（UTC+8 = UTC+8，所以 UTC 09:00）
+    - cron: '0 9 * * 1-5'
+  workflow_dispatch:  # 支持手动触发
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install yfinance numpy
+
+    - name: Run DRAM report
+      env:
+        WECOM_KEY: ${{ secrets.WECOM_KEY }}
+      run: |
+        python dram_report.py
